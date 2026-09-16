@@ -30,7 +30,7 @@ jobs:
           --health-cmd="mysqladmin ping -h localhost -uroot -proot"
           --health-interval=10s
           --health-timeout=5s
-          --health-retires=10
+          --health-retries=10
 
     steps:
     - uses: actions/checkout@v4
