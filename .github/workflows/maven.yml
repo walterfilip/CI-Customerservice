@@ -34,9 +34,9 @@ jobs:
     env:
       MYSQL_PASSWORD: root
       SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/customerdb
-      SPRING_DATASOUCE_PASSWORD: root
+      SPRING_DATASOURCE_PASSWORD: root
       SPRING_DATASOURCE_USERNAME: root
-      CUSTOMER_SERVICE_BASE_URL: http://localhost:8081
+
 
     steps:
     - uses: actions/checkout@v4
@@ -46,10 +46,6 @@ jobs:
         java-version: '25'
         distribution: 'temurin'
         cache: maven
+
     - name: Build with Maven
       run: mvn -B package --file pom.xml
-
-      env:
-        SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/customerdb
-        SPRING_DATASOURCE_USERNAME: root
-        SPRING_DATASOURCE_PASSWORD: root
