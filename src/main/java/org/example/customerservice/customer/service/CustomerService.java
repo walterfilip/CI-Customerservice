@@ -8,6 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.CONFLICT;
@@ -16,6 +19,7 @@ import static org.springframework.http.HttpStatus.CONFLICT;
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
+    private static final Logger log = LoggerFactory.getLogger(CustomerService.class);
 
     public CustomerService(CustomerRepository customerRepository) {
         this.customerRepository = customerRepository;
@@ -27,6 +31,7 @@ public class CustomerService {
             //Ändringen från tomt objekt kan möjligen inte fungera ihop med mastern på hotelbooking.
 
             if(!list.isEmpty()){
+                log.info("Customer creation failed! Email already exists.");
                 throw new ResponseStatusException(CONFLICT, "Epostadressen är redan registrerad");
             }
 
@@ -38,6 +43,7 @@ public class CustomerService {
             customer.setPhoneNumber(request.phoneNumber());
             customer.setPassword(Encoder.hashPassword(request.password()));
 
+            log.info("Customer created successfully");
             return toResponse(customerRepository.save(customer));
 
     }
