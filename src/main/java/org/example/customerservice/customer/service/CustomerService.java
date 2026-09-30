@@ -28,8 +28,6 @@ public class CustomerService {
 
             List<Customer> list = customerRepository.getCustomerByEmail(request.email());
 
-            //Ändringen från tomt objekt kan möjligen inte fungera ihop med mastern på hotelbooking.
-
             if(!list.isEmpty()){
                 log.info("Customer creation failed! Email already exists.");
                 throw new ResponseStatusException(CONFLICT, "Epostadressen är redan registrerad");
@@ -43,8 +41,9 @@ public class CustomerService {
             customer.setPhoneNumber(request.phoneNumber());
             customer.setPassword(Encoder.hashPassword(request.password()));
 
+            Customer savedCustomer = customerRepository.save(customer);
             log.info("Customer created successfully");
-            return toResponse(customerRepository.save(customer));
+            return toResponse(savedCustomer);
 
     }
 
@@ -58,6 +57,8 @@ public class CustomerService {
         Customer customer = customerRepository.findByEmail(request.email());
 
         if (customer == null) {
+            log.warn("Customer login failed");
+
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED,
                     "Fel användarnamn eller lösenord"
@@ -67,12 +68,15 @@ public class CustomerService {
         boolean correctPassword = Encoder.checkPassword(request.password(), customer.getPassword());
 
         if (!correctPassword) {
+            log.warn("Customer login failed");
+
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED,
                     "Fel användarnamn eller lösenord"
             );
         }
 
+        log.info("Customer login successful");
         return toResponse(customer);
     }
 
@@ -101,6 +105,8 @@ public class CustomerService {
             boolean correctPassword = Encoder.checkPassword(request.currentPassword(), customer.getPassword());
 
             if (!correctPassword) {
+                log.warn("Password change rejected: incorrect current password");
+
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nuvarande lösenord är felaktigt");
             }
         }
@@ -115,12 +121,14 @@ public class CustomerService {
 
         Customer savedCustomer = customerRepository.save(customer);
 
+        log.info("Customer updated successfully");
         return toResponse(savedCustomer);
     }
 
     public void removeUser(Long customerId) {
         Customer customer = customerRepository.findById(customerId).orElseThrow(() -> new RuntimeException("Kunden finns inte"));
         customerRepository.delete(customer);
+        log.info("Customer deleted successfully");
     }
 
 }
