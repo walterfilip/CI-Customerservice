@@ -34,6 +34,7 @@ class CustomerServiceTest {
     @InjectMocks
     private CustomerService customerService;
 
+
     private CreateCustomerRequest request = new CreateCustomerRequest(
             "jens",
             "jensson",
